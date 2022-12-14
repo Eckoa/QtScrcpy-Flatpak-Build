@@ -1,0 +1,59 @@
+---
+app-id: in.barryran.QtScrcpy
+runtime: org.kde.Platform
+runtime-version: 5.15-21.08
+sdk: org.kde.Sdk
+command: QtScrcpy
+finish-args:
+  - "--share=network"
+  - "--share=ipc"
+  - "--socket=x11"
+  - "--socket=wayland"
+  - "--device=all"
+  - "--persist=.android"
+  - "--persist=config/qtccrcpy"
+  - "--persist=config/qtccrcpy/keymap"
+
+modules:
+  - shared-modules/libusb/libusb.json
+
+# https://github.com/barry-ran/QtScrcpy
+  - name: adb
+    buildsystem: simple
+    build-commands:
+      - install -D adb /app/bin/adb
+    sources:
+      - type: archive
+        url: https://dl.google.com/android/repository/platform-tools_r33.0.0-linux.zip
+        sha256: ca746b60aa1c1f6a848ccbec0cbf16a5d10a5da45bcce9d681772afa1bc474d4
+        
+  - name: QtScrcpy
+    buildsystem: simple
+    build-commands:
+     -     
+       mkdir -p /app/bin
+       
+       mkdir -p /app/etc/qtccrcpy
+       
+       mkdir -p /app/etc/qtccrcpy/keymap       
+       
+       cmake -B build -S QtScrcpy -DCMAKE_BUILD_TYPE='Release' -DCMAKE_INSTALL_PREFIX='/app'
+       
+       cmake --build build
+       
+    sources:
+      - type: git
+        url: https://github.com/Eckoa/QtScrcpy-Flatpak.git
+        branch: dev
+      - type: patch 
+        path: patches/flatpak-paths.patch
+      
+        
+    post-install:
+      - install -Dm755 output/x64/Release/QtScrcpy  /app/bin/QtScrcpy
+      - install -Dm644 output/x64/Release/scrcpy-server /app/bin/scrcpy-server
+      - install -Dm644 output/x64/Release/sndcpy.apk /app/bin/sndcpy.apk
+      - install -Dm755 output/x64/Release/sndcpy.sh /app/bin/sndcpy.sh
+      - install -Dm644 backup/logo.png /app/share/icons/hicolor/256x256/apps/in.barryran.QtScrcpy.png
+      - install -Dm644 backup/qtscrcpy.desktop /app/share/applications/in.barryran.QtScrcpy.desktop
+      
