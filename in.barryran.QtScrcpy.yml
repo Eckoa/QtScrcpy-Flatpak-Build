@@ -37,7 +37,7 @@ modules:
        
        mkdir -p /app/etc/qtccrcpy/keymap       
        
-       cmake -B build -S QtScrcpy -DCMAKE_BUILD_TYPE='Release' -DCMAKE_INSTALL_PREFIX='/app'
+       cmake -B build -S QtScrcpy -DCMAKE_BUILD_TYPE='Release' -DCMAKE_INSTALL_PREFIX='/app' -DCMAKE_SKIP_RPATH='TRUE'
        
        cmake --build build
        
